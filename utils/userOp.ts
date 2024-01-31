@@ -17,7 +17,7 @@ export interface UserOperation {
     paymasterData: BytesLike
     signature: BytesLike
 }
-  
+
 export interface PackedUserOperation {
     sender: string
     nonce: BigNumberish
@@ -45,14 +45,14 @@ export function getUserOpHash (userOp: UserOperation, entryPoint: string, chainI
       paymasterAndData: "0x",
       signature: userOp.signature
     }
-  
+
     const userOpHash = keccak256(encodeAbiParameters(
       ['address', 'uint256', 'bytes32', 'bytes32','bytes32', 'uint256', 'uint256', 'uint256','bytes32'],
       [packedUserOp.sender, packedUserOp.nonce, keccak256(packedUserOp.initCode as `0x${string}`), keccak256(packedUserOp.callData as `0x${string}`),
         packedUserOp.accountGasLimits, packedUserOp.preVerificationGas, packedUserOp.maxFeePerGas, packedUserOp.maxPriorityFeePerGas,
         keccak256(packedUserOp.paymasterAndData as `0x${string}`)] as never
     ))
-  
+
     const enc = encodeAbiParameters(
       ['bytes32', 'address', 'uint256'],
       [userOpHash, entryPoint, chainId] as never)

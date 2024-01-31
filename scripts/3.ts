@@ -64,12 +64,12 @@ async function main() {
     sampleOp.signature = signature;
 
     const packedOp = packUserOp(sampleOp)
-    console.log(packUserOp);
-    // await simpleAccount.write.addDeposit([], { value: parseEther('1') })
-    // console.log(await simpleAccount.read.getDeposit());
-   
+    console.log(packedOp);
+    await simpleAccount.write.addDeposit([], { value: parseEther('1') })
+    console.log(await simpleAccount.read.getDeposit());
+
 }
-  
+
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
