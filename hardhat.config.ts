@@ -1,9 +1,24 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-toolbox';
+import 'dotenv/config';
 
 const config: HardhatUserConfig = {
+  defaultNetwork: 'anvil',
+  networks: {
+    anvil: {
+      url: 'http://localhost:8545',
+    },
+    sepolia: {
+      url: process.env.RPC_URL,
+      accounts: [process.env.PRIVATE_KEY as `0x${string}`],
+    },
+    bsctestnet: {
+      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+      accounts: [process.env.PRIVATE_KEY as `0x${string}`],
+    },
+  },
   solidity: {
-    version: "0.8.23",
+    version: '0.8.23',
     settings: {
       optimizer: {
         enabled: true,
@@ -12,7 +27,6 @@ const config: HardhatUserConfig = {
       viaIR: true,
     },
   },
-  
 };
 
 export default config;

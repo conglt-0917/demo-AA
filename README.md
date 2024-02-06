@@ -1,13 +1,21 @@
-# Sample Hardhat Project
+# Demo-AA
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## Install packages
 
-Try running some of the following tasks:
+```bash
+npm
+# or
+yarn
+```
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+## Compile
+
+```bash
+yarn hardhat compile
+```
+
+## Push Tx with AA
+
+```bash
+yarn hardhat run execute/run.ts
 ```
