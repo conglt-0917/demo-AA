@@ -1,3 +1,5 @@
+import { getEntryPoint, getFactory, getPaymaster, getAccount } from '../config/contracts';
+
 import { BigNumber, Event, Wallet } from 'ethers';
 import { parseEther, hexConcat, hexValue } from 'ethers/lib/utils';
 import {
@@ -59,39 +61,16 @@ import {
   simulateValidation,
 } from './UserOp';
 import { PackedUserOperation } from './UserOperation';
+import { accountOwner } from '../config/accounts';
 
-function getAccountDeployer(
-  factory: SimpleAccountFactory,
-  accountOwner: string,
-  _salt: number = 0
-): string {
-  return hexConcat([
-    factory.address,
-    hexValue(factory.interface.encodeFunctionData('createAccount', [accountOwner, _salt])!),
-  ]);
-}
+let entryPoint: EntryPoint = getEntryPoint();
+let factory: SimpleAccountFactory = getFactory();
+let paymaster: LegacyTokenPaymaster = getPaymaster();
+let account: SimpleAccount = getAccount();
 
 async function main() {
-  const chainId = await ethers.provider.getNetwork().then((net) => net.chainId);
-  let entryPoint: EntryPoint;
-  let factory: SimpleAccountFactory;
-
-  let accountOwner: Wallet;
   const ethersSigner = ethers.provider.getSigner();
-  let account: SimpleAccount;
-
-  // const globalUnstakeDelaySec = 2;
-  // const paymasterStake = ethers.utils.parseEther('2');
-
-  entryPoint = await deployEntryPoint();
-
-  accountOwner = createAccountOwner();
-  ({ proxy: account, accountFactory: factory } = await createAccount(
-    ethersSigner,
-    await accountOwner.getAddress(),
-    entryPoint.address
-  ));
-  await fund(account, '0.1');
+  await fund(account, '0.2');
 
   const sampleOp = await fillAndSign({ sender: account.address }, accountOwner, entryPoint);
   const packedOp = packUserOp(sampleOp);
@@ -101,13 +80,10 @@ async function main() {
   console.log(`Owner of wallet is: ${accountOwner.address}`);
   console.log(`Factory is: ${factory.address}`);
 
-  let paymaster: LegacyTokenPaymaster = await new LegacyTokenPaymaster__factory(
-    ethersSigner
-  ).deploy(factory.address, 'ttt', entryPoint.address);
   let pmAddr = paymaster.address;
   console.log(`Paymaster is\n: ${pmAddr}`);
 
-  await entryPoint.depositTo(paymaster.address, { value: parseEther('1') });
+  await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
   await paymaster.addStake(1, { value: parseEther('2') });
 
   console.log(await entryPoint.getDepositInfo(pmAddr));

@@ -1,70 +1,45 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { DeployFunction } from 'hardhat-deploy/types'
-import { Create2Factory } from '../src/Create2Factory'
-import { ethers } from 'hardhat'
-import hre from 'hardhat'
+import {
+  SimpleAccount,
+  SimpleAccountFactory,
+  EntryPoint,
+  LegacyTokenPaymaster__factory,
+  LegacyTokenPaymaster,
+} from '../typechain-types';
+import { ethers } from 'hardhat';
+import { deployEntryPoint, createAccount } from './utils';
+import { accountOwner } from '../config/accounts';
 
-const deployEntryPoint: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const provider = ethers.provider
-  const from = await provider.getSigner().getAddress()
-  await new Create2Factory(ethers.provider).deployFactory()
-
-  const ret = await hre.deployments.deploy(
-    'EntryPoint', {
-      from,
-      args: [],
-      gasLimit: 6e6,
-      deterministicDeployment: true
-    })
-  console.log('==entrypoint addr=', ret.address)
-
-  const entryPointAddress = ret.address
-  const w = await hre.deployments.deploy(
-    'SimpleAccount', {
-      from,
-      args: [entryPointAddress],
-      gasLimit: 2e6,
-      deterministicDeployment: true
-    })
-
-  console.log('== wallet=', w.address)
-
-  const t = await hre.deployments.deploy('TestCounter', {
-    from,
-    deterministicDeployment: true
-  })
-  console.log('==testCounter=', t.address)
-}
-
-const deploySimpleAccountFactory: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-    const provider = ethers.provider
-    const from = await provider.getSigner().getAddress()
-    const network = await provider.getNetwork()
-    // only deploy on local test network.
-    if (network.chainId !== 31337 && network.chainId !== 1337) {
-      return
-    }
-
-    const entrypoint = await hre.deployments.get('EntryPoint')
-    const ret = await hre.deployments.deploy(
-      'SimpleAccountFactory', {
-        from,
-        args: [entrypoint.address],
-        gasLimit: 6e6,
-        log: true,
-        deterministicDeployment: true
-      })
-    console.log('==SimpleAccountFactory addr=', ret.address)
-  }
+let entryPoint: EntryPoint;
+let factory: SimpleAccountFactory;
+let paymaster: LegacyTokenPaymaster;
+let account: SimpleAccount;
 
 async function main() {
-    await deployEntryPoint(hre);
-    await deploySimpleAccountFactory(hre);
+  const ethersSigner = ethers.provider.getSigner();
+
+  entryPoint = await deployEntryPoint();
+
+  ({ proxy: account, accountFactory: factory } = await createAccount(
+    ethersSigner,
+    await accountOwner.getAddress(),
+    entryPoint.address
+  ));
+
+  paymaster = await new LegacyTokenPaymaster__factory(ethersSigner).deploy(
+    factory.address,
+    'ttt',
+    entryPoint.address
+  );
+  let pmAddr = paymaster.address;
+
+  console.log(`Paymaster is\n: ${pmAddr}`);
+  console.log(`EntryPoint address: ${entryPoint.address}`);
+  console.log(`Smart account wallet: ${account.address}`);
+  console.log(`Owner of wallet is: ${accountOwner.address}`);
+  console.log(`Factory is: ${factory.address}`);
 }
 
-
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+  console.error(error);
+  process.exitCode = 1;
 });
-

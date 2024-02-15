@@ -3,9 +3,9 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 
 const config: HardhatUserConfig = {
-  defaultNetwork: 'anvil',
+  defaultNetwork: 'localhost',
   networks: {
-    anvil: {
+    localhost: {
       url: 'http://localhost:8545',
     },
     sepolia: {
