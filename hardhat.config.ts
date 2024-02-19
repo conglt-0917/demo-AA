@@ -13,7 +13,7 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY as `0x${string}`],
     },
     bsctestnet: {
-      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+      url: 'https://data-seed-prebsc-1-s1.bnbchain.org:8545',
       accounts: [process.env.PRIVATE_KEY as `0x${string}`],
     },
   },
