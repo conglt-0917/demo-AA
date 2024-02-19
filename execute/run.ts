@@ -33,11 +33,11 @@ async function main() {
  try {
    //await fund(account, '0.25');
 
-   const sampleOp = await fillAndSign({ sender: account.address }, accountOwner, entryPoint);
+   // const sampleOp = await fillAndSign({ sender: account.address }, accountOwner, entryPoint);
    // const packedOp = packUserOp(sampleOp);
  
-   // await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
-   // await paymaster.addStake(1, { value: parseEther('0.1') });
+  //  await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
+  //  await paymaster.addStake(1, { value: parseEther('0.1') });
  
    let createOp: PackedUserOperation = await fillSignAndPack(
      {
@@ -51,7 +51,7 @@ async function main() {
      entryPoint
    );
  
-   //const preAddr = createOp.sender;
+   const preAddr = createOp.sender;
  
    //console.log(createOp);
  
@@ -66,7 +66,7 @@ async function main() {
  
     const tx = await entryPoint
      .handleOps([createOp], beneficiaryAddress, {
-       gasLimit: 5e7,
+       gasLimit: 1e7,
     })
     await tx!.wait();
  

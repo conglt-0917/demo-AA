@@ -27,7 +27,7 @@ async function main() {
 
   paymaster = await new LegacyTokenPaymaster__factory(ethersSigner).deploy(
     factory.address,
-    'ttt',
+    'USDT',
     entryPoint.address
   );
   let pmAddr = paymaster.address;

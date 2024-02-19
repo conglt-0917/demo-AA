@@ -16,6 +16,10 @@ const config: HardhatUserConfig = {
       url: 'https://data-seed-prebsc-1-s1.bnbchain.org:8545',
       accounts: [process.env.PRIVATE_KEY as `0x${string}`],
     },
+    mumbai: {
+      url: 'https://polygon-mumbai-bor.publicnode.com',
+      accounts: [process.env.PRIVATE_KEY as `0x${string}`],
+    }
   },
   solidity: {
     version: '0.8.23',
