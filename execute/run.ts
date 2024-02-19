@@ -86,7 +86,6 @@ async function main() {
   await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
   await paymaster.addStake(1, { value: parseEther('2') });
 
-  console.log(await entryPoint.getDepositInfo(pmAddr));
   let createOp: PackedUserOperation = await fillSignAndPack(
     {
       sender: account.address,
@@ -109,7 +108,7 @@ async function main() {
   let beforeBalance = await getTokenBalance(paymaster, account.address);
   console.log(`\nbalance ERC-20 of smart contract wallet before send Tx: ${beforeBalance}`);
 
-  await simulateValidation(createOp, entryPoint.address, { gasLimit: 5e6 });
+  //await simulateValidation(createOp, entryPoint.address, { gasLimit: 5e6 });
 
   const beneficiaryAddress = createAddress();
 
