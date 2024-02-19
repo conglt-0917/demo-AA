@@ -70,7 +70,7 @@ let account: SimpleAccount = getAccount();
 
 async function main() {
   const ethersSigner = ethers.provider.getSigner();
-  await fund(account, '0.2');
+  await fund(account, '0.25');
 
   const sampleOp = await fillAndSign({ sender: account.address }, accountOwner, entryPoint);
   const packedOp = packUserOp(sampleOp);
@@ -84,7 +84,7 @@ async function main() {
   console.log(`Paymaster is\n: ${pmAddr}`);
 
   await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
-  await paymaster.addStake(1, { value: parseEther('2') });
+  await paymaster.addStake(1, { value: parseEther('0.1') });
 
   let createOp: PackedUserOperation = await fillSignAndPack(
     {
