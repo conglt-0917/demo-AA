@@ -25,6 +25,7 @@ contract LegacyTokenPaymaster is BasePaymaster, ERC20 {
     uint256 constant public COST_OF_POST = 15000;
 
     address public immutable theFactory;
+    mapping (address => uint256) public timeFaucet;
 
     constructor(address accountFactory, string memory _symbol, IEntryPoint _entryPoint) ERC20(_symbol, _symbol) BasePaymaster(_entryPoint) {
         theFactory = accountFactory;
@@ -43,6 +44,12 @@ contract LegacyTokenPaymaster is BasePaymaster, ERC20 {
      */
     function mintTokens(address recipient, uint256 amount) external onlyOwner {
         _mint(recipient, amount);
+    }
+
+    function faucet() external {
+        require(block.timestamp >= timeFaucet[msg.sender] + 600 || timeFaucet[msg.sender] == 0);
+        timeFaucet[msg.sender] = block.timestamp;
+        _mint(msg.sender, 10);
     }
 
     /**
