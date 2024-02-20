@@ -12,13 +12,15 @@ let factory: SimpleAccountFactory = getFactory();
 
 async function main() {
     try {
-        // await fund(account, '0.25');
-        const account = await factory.getAddress(accountOwner.address, 0);
+        
+        const account = await factory.getAddress(accountOwner.address, 1712);
+        console.log(account);
+        await fund(account, '0.05');
 
-        await paymaster.faucet(accountOwner.address);
+        // await paymaster.faucet(account);
 
-        let balance = await getTokenBalance(paymaster, account);
-        console.log(`\nbalance ERC-20 of smart contract wallet: ${balance}`);
+        // let balance = await getTokenBalance(paymaster, account);
+        // console.log(`\nbalance ERC-20 of smart contract wallet: ${balance}`);
     } catch (err) {
         console.log(err);
     }

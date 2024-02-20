@@ -12,7 +12,7 @@ contract TokenPaymaster is BasePaymaster, ERC20 {
     address public immutable theFactory;
     mapping (address => uint256) public timeFaucet;
 
-    constructor(address accountFactory, string memory _symbol, IEntryPoint _entryPoint) ERC20(_symbol, _symbol) BasePaymaster(_entryPoint) {
+    constructor(address accountFactory, string memory _symbol, IEntryPoint _entryPoint) ERC20(_symbol, _symbol) BasePaymaster(_entryPoint) Ownable() {
         theFactory = accountFactory;
         uint256 totalSupply = 1000000000 * (10**18); // Total supply is 1 billion
 
@@ -26,7 +26,6 @@ contract TokenPaymaster is BasePaymaster, ERC20 {
         timeFaucet[reiceiver] = block.timestamp;
         _transfer(address(this), reiceiver, 100 ether);
     }
-
 
     /**
      * transfer paymaster ownership.

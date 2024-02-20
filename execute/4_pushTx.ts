@@ -20,7 +20,7 @@ import { hexValue } from '@ethersproject/bytes';
 
 let entryPoint: EntryPoint = getEntryPoint();
 let paymaster: TokenPaymaster = getPaymaster();
-let account: SimpleAccount = getAccount();
+// let account: SimpleAccount = getAccount();
 let factory: SimpleAccountFactory = getFactory();
 
 function getAccountDeployer(entryPoint: string, accountOwner: string, _salt: number = 0): string {
@@ -32,17 +32,18 @@ function getAccountDeployer(entryPoint: string, accountOwner: string, _salt: num
 
 async function main() {
   try {
-    let createOp = await fillAndSign({
-      initCode: getAccountDeployer(contractAddress.entryPoint, accountOwner.address, 3),
+    const account = await factory.getAddress(accountOwner.address, 1712);
+
+    let createOp : UserOperation = await fillAndSign({
+      initCode: getAccountDeployer(contractAddress.entryPoint, accountOwner.address, 1712),
       verificationGasLimit: 2e6,
       paymasterAndData: contractAddress.paymaster,
       nonce: 0
     }, accountOwner, entryPoint)
 
+    console.log(createOp);
 
-    console.log(createOp.nonce);
-
-    let beforeBalance = await getTokenBalance(paymaster, contractAddress.simpleAccount);
+    let beforeBalance = await getTokenBalance(paymaster, account);
     console.log(`\nbalance ERC-20 of smart contract wallet before send Tx: ${beforeBalance}`);
 
     const beneficiaryAddress = createAddress();
@@ -55,7 +56,7 @@ async function main() {
       })
     await tx!.wait();
 
-    let afterBalance = await getTokenBalance(paymaster, contractAddress.simpleAccount);
+    let afterBalance = await getTokenBalance(paymaster, account);
     console.log(`\n balance ERC-20 of smart contract wallet after send Tx: ${afterBalance}`);
 
     console.log(`\n Fee ERC-20 token: ${parseFloat(beforeBalance.toString()) - parseFloat(afterBalance.toString())}`);

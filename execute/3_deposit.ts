@@ -11,8 +11,8 @@ let paymaster: TokenPaymaster = getPaymaster();
 
 async function main() {
     try {
-        await entryPoint.depositTo(contractAddress.paymaster, { value: parseEther('0.1') });
-        await paymaster.addStake(1, { value: parseEther('0.1') });
+        await entryPoint.depositTo(contractAddress.paymaster, { value: parseEther('0.05') });
+        //await paymaster.addStake(1, { value: parseEther('0.1') });
     } catch (err) {
         console.log(err);
     }
