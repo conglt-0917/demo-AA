@@ -27,12 +27,12 @@ async function main() {
 
   paymaster = await new LegacyTokenPaymaster__factory(ethersSigner).deploy(
     factory.address,
-    'ttt',
+    'USDT',
     entryPoint.address
   );
   let pmAddr = paymaster.address;
 
-  console.log(`Paymaster is\n: ${pmAddr}`);
+  console.log(`Paymaster address is: ${pmAddr}`);
   console.log(`EntryPoint address: ${entryPoint.address}`);
   console.log(`Smart account wallet: ${account.address}`);
   console.log(`Owner of wallet is: ${accountOwner.address}`);

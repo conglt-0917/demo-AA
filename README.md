@@ -22,20 +22,27 @@ Fill `.env`
 yarn hardhat compile
 ```
 
-## Deploy smart contracts
+## Deploy smart contracts (default is mumbai testnet)
 
 ```bash
-yarn hardhat run execute/deploy.ts
+yarn hardhat run execute/1_deploy.ts
 ```
+
+Copy all adress to `config/contracts.ts`
 
 ```bash
 cp config/contracts.example.ts config/contracts.ts
 ```
 
-Copy all adress to `config/contracts.ts`
+## Fund token and deposit
+
+```bash
+yarn hardhat run execute/2_fundAndMint.ts
+```
 
 ## Push transaction (pay with erc-20)
 
 ```bash
-yarn hardhat run execute/run.ts --network [localhost or sepolia or bsctestnet]
+yarn hardhat run execute/3_pushTx.ts
 ```
+
