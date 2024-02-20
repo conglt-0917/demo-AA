@@ -4,6 +4,7 @@ import {
   EntryPoint,
   LegacyTokenPaymaster__factory,
   LegacyTokenPaymaster,
+  EntryPoint__factory
 } from '../typechain-types';
 import { ethers } from 'hardhat';
 import { deployEntryPoint, createAccount } from './utils';
@@ -17,7 +18,7 @@ let account: SimpleAccount;
 async function main() {
   const ethersSigner = ethers.provider.getSigner();
 
-  entryPoint = await deployEntryPoint();
+  entryPoint = await new EntryPoint__factory(ethersSigner).deploy();
 
   ({ proxy: account, accountFactory: factory } = await createAccount(
     ethersSigner,
