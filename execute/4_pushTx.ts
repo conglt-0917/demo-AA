@@ -21,21 +21,19 @@ let account: SimpleAccount = getAccount();
 
 async function main() {
   try {
-    const nonce = await ethers.provider.getTransactionCount(account.address);
-
     let createOp: PackedUserOperation = await fillSignAndPack(
       {
         sender: account.address,
         verificationGasLimit: 2e6,
         paymaster: paymaster.address,
         paymasterPostOpGasLimit: 3e5,
-        nonce,
+        nonce: 0, // increase nonce if send new tx
       },
       accountOwner,
       entryPoint
     );
 
-    //console.log(createOp);
+    console.log(createOp.nonce);
 
     let beforeBalance = await getTokenBalance(paymaster, account.address);
     console.log(`\nbalance ERC-20 of smart contract wallet before send Tx: ${beforeBalance}`);
