@@ -3,7 +3,7 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'dotenv/config';
 
 const config: HardhatUserConfig = {
-  defaultNetwork: 'localhost',
+  defaultNetwork: 'mumbai',
   networks: {
     localhost: {
       url: 'http://localhost:8545',
