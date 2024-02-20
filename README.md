@@ -40,9 +40,15 @@ cp config/contracts.example.ts config/contracts.ts
 yarn hardhat run execute/2_fundAndMint.ts
 ```
 
+## Deposit
+
+```bash
+yarn hardhat run execute/3_deposit.ts
+```
+
+
 ## Push transaction (pay with erc-20)
 
 ```bash
-yarn hardhat run execute/3_pushTx.ts
+yarn hardhat run execute/4_pushTx.ts
 ```
-
