@@ -1,21 +1,23 @@
-import { getPaymaster, getAccount } from '../config/contracts';
-import { parseEther } from 'ethers/lib/utils';
+import { getPaymaster, getAccount, getFactory } from '../config/contracts';
 import {
     SimpleAccount,
-    LegacyTokenPaymaster,
+    TokenPaymaster,
+    SimpleAccountFactory
 } from '../typechain-types';
 import { fund, getTokenBalance } from './utils';
+import { accountOwner } from '../config/accounts';
 
-let paymaster: LegacyTokenPaymaster = getPaymaster();
-let account: SimpleAccount = getAccount();
+let paymaster: TokenPaymaster = getPaymaster();
+let factory: SimpleAccountFactory = getFactory();
 
 async function main() {
     try {
-        await fund(account, '0.25');
+        // await fund(account, '0.25');
+        const account = await factory.getAddress(accountOwner.address, 0);
 
-        await paymaster.mintTokens(account.address, parseEther('10'));
+        await paymaster.faucet(accountOwner.address);
 
-        let balance = await getTokenBalance(paymaster, account.address);
+        let balance = await getTokenBalance(paymaster, account);
         console.log(`\nbalance ERC-20 of smart contract wallet: ${balance}`);
     } catch (err) {
         console.log(err);

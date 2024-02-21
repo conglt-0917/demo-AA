@@ -2,15 +2,16 @@ import { getEntryPoint, getPaymaster } from '../config/contracts';
 import { parseEther } from 'ethers/lib/utils';
 import {
     EntryPoint,
-    LegacyTokenPaymaster,
+    TokenPaymaster,
 } from '../typechain-types';
+import { contractAddress } from '../config/contracts';
 
 let entryPoint: EntryPoint = getEntryPoint();
-let paymaster: LegacyTokenPaymaster = getPaymaster();
+let paymaster: TokenPaymaster = getPaymaster();
 
 async function main() {
     try {
-        await entryPoint.depositTo(paymaster.address, { value: parseEther('0.1') });
+        await entryPoint.depositTo(contractAddress.paymaster, { value: parseEther('0.1') });
         await paymaster.addStake(1, { value: parseEther('0.1') });
     } catch (err) {
         console.log(err);

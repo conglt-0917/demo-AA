@@ -1,41 +1,48 @@
-import { getEntryPoint, getPaymaster, getAccount } from '../config/contracts';
+import { getEntryPoint, getPaymaster, getAccount, getFactory } from '../config/contracts';
 import {
   SimpleAccount,
   EntryPoint,
-  LegacyTokenPaymaster,
+  TokenPaymaster,
+  SimpleAccountFactory
 } from '../typechain-types';
 import {
   createAddress,
   getTokenBalance,
 } from './utils';
 import {
-  fillSignAndPack,
+  fillAndSign,
 } from './UserOp';
-import { PackedUserOperation } from './UserOperation';
+import { UserOperation } from './UserOperation';
 import { accountOwner } from '../config/accounts';
-import { ethers } from 'hardhat';
+import { contractAddress } from '../config/contracts';
+import { hexConcat, parseEther } from 'ethers/lib/utils';
+import { hexValue } from '@ethersproject/bytes';
 
 let entryPoint: EntryPoint = getEntryPoint();
-let paymaster: LegacyTokenPaymaster = getPaymaster();
+let paymaster: TokenPaymaster = getPaymaster();
 let account: SimpleAccount = getAccount();
+let factory: SimpleAccountFactory = getFactory();
+
+function getAccountDeployer(entryPoint: string, accountOwner: string, _salt: number = 0): string {
+  return hexConcat([
+    contractAddress.accountFactory,
+    hexValue(factory.interface.encodeFunctionData('createAccount', [accountOwner, _salt])!)
+  ])
+}
 
 async function main() {
   try {
-    let createOp: PackedUserOperation = await fillSignAndPack(
-      {
-        sender: account.address,
-        verificationGasLimit: 2e6,
-        paymaster: paymaster.address,
-        paymasterPostOpGasLimit: 3e5,
-        nonce: 0, // increase nonce if send new tx
-      },
-      accountOwner,
-      entryPoint
-    );
+    let createOp = await fillAndSign({
+      initCode: getAccountDeployer(contractAddress.entryPoint, accountOwner.address, 3),
+      verificationGasLimit: 2e6,
+      paymasterAndData: contractAddress.paymaster,
+      nonce: 0
+    }, accountOwner, entryPoint)
+
 
     console.log(createOp.nonce);
 
-    let beforeBalance = await getTokenBalance(paymaster, account.address);
+    let beforeBalance = await getTokenBalance(paymaster, contractAddress.simpleAccount);
     console.log(`\nbalance ERC-20 of smart contract wallet before send Tx: ${beforeBalance}`);
 
     const beneficiaryAddress = createAddress();
@@ -48,10 +55,10 @@ async function main() {
       })
     await tx!.wait();
 
-    let afterBalance = await getTokenBalance(paymaster, account.address);
+    let afterBalance = await getTokenBalance(paymaster, contractAddress.simpleAccount);
     console.log(`\n balance ERC-20 of smart contract wallet after send Tx: ${afterBalance}`);
 
-    console.log(`\n Fee ERC-20 token: ${parseFloat(beforeBalance) - parseFloat(afterBalance)}`);
+    console.log(`\n Fee ERC-20 token: ${parseFloat(beforeBalance.toString()) - parseFloat(afterBalance.toString())}`);
   } catch (err) {
     console.log(err);
   }

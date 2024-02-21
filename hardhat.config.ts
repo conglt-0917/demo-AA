@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
       url: 'http://localhost:8545',
     },
     sepolia: {
-      url: process.env.RPC_URL,
+      url: 'https://rpc.sepolia.org',
       accounts: [process.env.PRIVATE_KEY as `0x${string}`],
     },
     bsctestnet: {

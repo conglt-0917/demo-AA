@@ -4,11 +4,14 @@ import {
   EntryPoint,
   LegacyTokenPaymaster__factory,
   LegacyTokenPaymaster,
-  EntryPoint__factory
+  EntryPoint__factory,
+  IEntryPoint
 } from '../typechain-types';
 import { ethers } from 'hardhat';
 import { deployEntryPoint, createAccount } from './utils';
 import { accountOwner } from '../config/accounts';
+import { getEntryPoint, getPaymaster } from '../config/contracts';
+import { getFactory } from '../config/contracts.example';
 
 let entryPoint: EntryPoint;
 let factory: SimpleAccountFactory;
@@ -28,7 +31,7 @@ async function main() {
 
   paymaster = await new LegacyTokenPaymaster__factory(ethersSigner).deploy(
     factory.address,
-    'USDT',
+    'SONY',
     entryPoint.address
   );
   let pmAddr = paymaster.address;

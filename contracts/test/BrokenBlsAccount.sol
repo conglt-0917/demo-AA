@@ -1,6 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0
-
-/* solhint-disable one-contract-per-file */
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
@@ -27,7 +25,7 @@ contract BrokenBLSAccount is SimpleAccount, IBLSAccount {
         super._initialize(address(0));
     }
 
-    function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
+    function _validateSignature(UserOperation calldata userOp, bytes32 userOpHash)
     internal override view returns (uint256 validationData) {
 
         (userOp, userOpHash);

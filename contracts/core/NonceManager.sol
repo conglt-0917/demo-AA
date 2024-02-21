@@ -6,7 +6,7 @@ import "../interfaces/IEntryPoint.sol";
 /**
  * nonce management functionality
  */
-abstract contract NonceManager is INonceManager {
+contract NonceManager is INonceManager {
 
     /**
      * The next valid sequence number for a given nonce key.
