@@ -4,19 +4,25 @@ import 'dotenv/config';
 import { abi as entryPointABI } from '../artifacts/contracts/core/EntryPoint.sol/EntryPoint.json';
 import { abi as factoryABI } from '../artifacts/contracts/samples/SimpleAccountFactory.sol/SimpleAccountFactory.json';
 import { abi as accountABI } from '../artifacts/contracts/samples/SimpleAccount.sol/SimpleAccount.json';
-import { abi as paymasterABI } from '../artifacts/contracts/samples/TokenPaymaster.sol/TokenPaymaster.json';
+import { abi as paymasterERC20ABI } from '../artifacts/contracts/samples/TokenPaymaster.sol/TokenPaymaster.json';
+import { abi as paymasterSponsorABI } from '../artifacts/contracts/samples/SponsorPaymaster.sol/SponsorPaymaster.json';
+import nftABI from './abiNFT.json';
 import {
   SimpleAccount,
   SimpleAccountFactory,
   EntryPoint,
   TokenPaymaster,
+  SponsorPaymaster
 } from '../typechain-types';
 
+
 export const contractAddress = {
-  entryPoint: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789' as `0x${string}`,
-  accountFactory: '0x00004EC70002a32400f8ae005A26081065620D20' as `0x${string}`,
-  simpleAccount: 'YOUR_ADDRESS_HERE' as `0x${string}`,
-  paymaster: '0x0d849b3229E2852ce32b30e5e42C3FDaC4814819' as `0x${string}`,
+  entryPoint: '' as `0x${string}`,
+  accountFactory: '' as `0x${string}`,
+  simpleAccount: '' as `0x${string}`,
+  paymasterErc20: '' as `0x${string}`,
+  paymasterSponsor: '' as `0x${string}`,
+  nft: '' as `0x${string}`
 };
 
 const provider = ethers.provider;
@@ -34,10 +40,22 @@ export const getFactory = (): SimpleAccountFactory => {
   return instance as SimpleAccountFactory;
 };
 
-export const getPaymaster = (): TokenPaymaster => {
-  let instance = new Contract(contractAddress.paymaster, paymasterABI, provider);
+export const getPaymasterERC20 = (): TokenPaymaster => {
+  let instance = new Contract(contractAddress.paymasterErc20, paymasterERC20ABI, provider);
   instance = instance.connect(signer);
   return instance as TokenPaymaster;
+};
+
+export const getPaymasterSponsor = (): SponsorPaymaster => {
+  let instance = new Contract(contractAddress.paymasterSponsor, paymasterSponsorABI, provider);
+  instance = instance.connect(signer);
+  return instance as SponsorPaymaster;
+};
+
+export const getNFT = (): Contract => {
+  let instance = new Contract(contractAddress.nft, nftABI, provider);
+  instance = instance.connect(signer);
+  return instance;
 };
 
 export const getAccount = (): SimpleAccount => {

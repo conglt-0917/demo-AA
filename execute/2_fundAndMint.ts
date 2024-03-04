@@ -1,26 +1,36 @@
-import { getPaymaster, getAccount, getFactory } from '../config/contracts';
+import { getPaymasterERC20, getPaymasterSponsor, getFactory } from '../config/contracts';
 import {
     SimpleAccount,
     TokenPaymaster,
-    SimpleAccountFactory
+    SimpleAccountFactory,
+    SponsorPaymaster
 } from '../typechain-types';
-import { fund, getTokenBalance } from './utils';
+import { fund, getTokenBalance, getBalance } from './utils';
 import { accountOwner } from '../config/accounts';
+import { salt } from '../config/salt';
+import { parseEther } from 'ethers/lib/utils';
+import { ethers } from 'hardhat';
 
-let paymaster: TokenPaymaster = getPaymaster();
+let paymasterErc20: TokenPaymaster = getPaymasterERC20();
+let paymasterSponsor: SponsorPaymaster = getPaymasterSponsor();
 let factory: SimpleAccountFactory = getFactory();
 
 async function main() {
     try {
-        
-        const account = await factory.getAddress(accountOwner.address, 1712);
+        const signer = ethers.provider.getSigner();
+        const account = await factory.getAddress(accountOwner.address, salt);
         console.log(account);
-        await fund(account, '0.05');
 
-        // await paymaster.faucet(account);
+        await paymasterErc20.faucet(account);
 
-        // let balance = await getTokenBalance(paymaster, account);
-        // console.log(`\nbalance ERC-20 of smart contract wallet: ${balance}`);
+        let balance = await getTokenBalance(paymasterErc20, account);
+        console.log(`\nbalance ERC-20 of smart contract wallet: ${balance}`);
+
+        //await fund(paymasterSponsor.address as string);
+        await signer.sendTransaction({ to: account, value: parseEther('1') })
+        balance = await getBalance(account);
+        console.log(`Balance ETH of smart contract wallet: ${balance}`);
+
     } catch (err) {
         console.log(err);
     }

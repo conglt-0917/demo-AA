@@ -4,22 +4,18 @@ pragma solidity ^0.8.12;
 
 /* solhint-disable reason-string */
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "../interfaces/IPaymaster.sol";
 import "../interfaces/IEntryPoint.sol";
 import "./Helpers.sol";
 
-/**
- * Helper class for creating a paymaster.
- * provides helper methods for staking.
- * validates that the postOp is called only by the entryPoint
- */
-abstract contract BasePaymaster is IPaymaster, Ownable {
+abstract contract BasePaymaster is IPaymaster, AccessControl {
 
     IEntryPoint immutable public entryPoint;
 
     constructor(IEntryPoint _entryPoint) {
         entryPoint = _entryPoint;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @inheritdoc IPaymaster
@@ -69,7 +65,7 @@ abstract contract BasePaymaster is IPaymaster, Ownable {
      * @param withdrawAddress target to send to
      * @param amount to withdraw
      */
-    function withdrawTo(address payable withdrawAddress, uint256 amount) public onlyOwner {
+    function withdrawTo(address payable withdrawAddress, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
         entryPoint.withdrawTo(withdrawAddress, amount);
     }
     /**
@@ -77,7 +73,7 @@ abstract contract BasePaymaster is IPaymaster, Ownable {
      * This method can also carry eth value to add to the current stake.
      * @param unstakeDelaySec - the unstake delay for this paymaster. Can only be increased.
      */
-    function addStake(uint32 unstakeDelaySec) external payable onlyOwner {
+    function addStake(uint32 unstakeDelaySec) external payable onlyRole(DEFAULT_ADMIN_ROLE) {
         entryPoint.addStake{value : msg.value}(unstakeDelaySec);
     }
 
@@ -92,7 +88,7 @@ abstract contract BasePaymaster is IPaymaster, Ownable {
      * unlock the stake, in order to withdraw it.
      * The paymaster can't serve requests once unlocked, until it calls addStake again
      */
-    function unlockStake() external onlyOwner {
+    function unlockStake() external onlyRole(DEFAULT_ADMIN_ROLE) {
         entryPoint.unlockStake();
     }
 
@@ -101,7 +97,7 @@ abstract contract BasePaymaster is IPaymaster, Ownable {
      * stake must be unlocked first (and then wait for the unstakeDelay to be over)
      * @param withdrawAddress the address to send withdrawn value.
      */
-    function withdrawStake(address payable withdrawAddress) external onlyOwner {
+    function withdrawStake(address payable withdrawAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         entryPoint.withdrawStake(withdrawAddress);
     }
 
@@ -110,3 +106,4 @@ abstract contract BasePaymaster is IPaymaster, Ownable {
         require(msg.sender == address(entryPoint), "Sender not EntryPoint");
     }
 }
+

@@ -1,21 +1,25 @@
 import {
   SimpleAccount,
   SimpleAccountFactory,
+  SimpleAccountFactory__factory,
   EntryPoint,
-  LegacyTokenPaymaster__factory,
-  LegacyTokenPaymaster,
+  TokenPaymaster__factory,
+  TokenPaymaster,
   EntryPoint__factory,
-  IEntryPoint
+  IEntryPoint,
+  SponsorPaymaster,
+  SponsorPaymaster__factory
 } from '../typechain-types';
 import { ethers } from 'hardhat';
 import { deployEntryPoint, createAccount } from './utils';
 import { accountOwner } from '../config/accounts';
-import { getEntryPoint, getPaymaster } from '../config/contracts';
+import { getEntryPoint, getPaymasterERC20, getPaymasterSponsor } from '../config/contracts';
 import { getFactory } from '../config/contracts.example';
 
 let entryPoint: EntryPoint;
 let factory: SimpleAccountFactory;
-let paymaster: LegacyTokenPaymaster;
+let paymasterErc20: TokenPaymaster;
+let paymasterSponsor: SponsorPaymaster;
 let account: SimpleAccount;
 
 async function main() {
@@ -23,23 +27,30 @@ async function main() {
 
   entryPoint = await new EntryPoint__factory(ethersSigner).deploy();
 
-  ({ proxy: account, accountFactory: factory } = await createAccount(
-    ethersSigner,
-    await accountOwner.getAddress(),
-    entryPoint.address
-  ));
+  factory = await new SimpleAccountFactory__factory(ethersSigner).deploy(entryPoint.address);
 
-  paymaster = await new LegacyTokenPaymaster__factory(ethersSigner).deploy(
+  // ({ proxy: account, accountFactory: factory } = await createAccount(
+  //   ethersSigner,
+  //   await accountOwner.getAddress(),
+  //   entryPoint.address
+  // ));
+
+  paymasterErc20 = await new TokenPaymaster__factory(ethersSigner).deploy(
     factory.address,
     'SONY',
     entryPoint.address
   );
-  let pmAddr = paymaster.address;
 
-  console.log(`Paymaster address is: ${pmAddr}`);
+  paymasterSponsor = await new SponsorPaymaster__factory(ethersSigner).deploy(
+    factory.address,
+    entryPoint.address
+  );
+
+  console.log(`Paymaster ERC20 address is: ${paymasterErc20.address}`);
+  console.log(`Paymaster Sponsor address is: ${paymasterSponsor.address}`);
   console.log(`EntryPoint address: ${entryPoint.address}`);
-  console.log(`Smart account wallet: ${account.address}`);
-  console.log(`Owner of wallet is: ${accountOwner.address}`);
+  // console.log(`Smart account wallet: ${account.address}`);
+  // console.log(`Owner of wallet is: ${accountOwner.address}`);
   console.log(`Factory is: ${factory.address}`);
 }
 
